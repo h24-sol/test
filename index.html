@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Hybrid Network App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .status-dot {
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .online { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .offline { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
+        .bluetooth { background-color: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
+        <h1 class="text-3xl font-bold text-center mb-2 text-blue-400">P2P Messenger</h1>
+        <p class="text-gray-400 text-center mb-8 text-sm">Hybrid: WebRTC + Bluetooth</p>
+
+        <div class="space-y-4 mb-8">
+            <div class="flex items-center justify-between bg-gray-700 p-4 rounded-xl">
+                <span>ইন্টারনেট স্ট্যাটাস:</span>
+                <div class="flex items-center gap-2">
+                    <span id="net-status-text">চেক করা হচ্ছে...</span>
+                    <span id="net-dot" class="status-dot"></span>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between bg-gray-700 p-4 rounded-xl">
+                <span>ব্লুটুথ মোড (অফলাইন):</span>
+                <div class="flex items-center gap-2">
+                    <span id="bt-status-text">বন্ধ</span>
+                    <span id="bt-dot" class="status-dot offline"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+            <button id="scan-btn" class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-all">
+                কাছাকাছি ডিভাইস খুঁজুন (Scan)
+            </button>
+            <div id="log-container" class="mt-4 p-3 bg-black rounded-lg text-xs font-mono h-32 overflow-y-auto text-green-400 border border-gray-600">
+                > সিস্টেম রেডি...<br>
+                > কানেকশনের জন্য অপেক্ষা করা হচ্ছে...
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-8 text-gray-500 text-xs">
+        &copy; 2026 P2P Hybrid Network | Build for GitHub
+    </footer>
+
+    <script>
+        const netStatusText = document.getElementById('net-status-text');
+        const netDot = document.getElementById('net-dot');
+        const btStatusText = document.getElementById('bt-status-text');
+        const btDot = document.getElementById('bt-dot');
+        const logContainer = document.getElementById('log-container');
+
+        function addLog(msg) {
+            const time = new Date().toLocaleTimeString();
+            logContainer.innerHTML += `<br> [${time}] ${msg}`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // নেটওয়ার্ক স্ট্যাটাস আপডেট
+        function updateOnlineStatus() {
+            if (navigator.onLine) {
+                netStatusText.innerText = "অনলাইন (WebRTC)";
+                netDot.className = "status-dot online";
+                btStatusText.innerText = "স্ট্যান্ডবাই";
+                btDot.className = "status-dot offline";
+                addLog("> অনলাইনে কানেক্টেড। WebRTC চ্যানেল সক্রিয়।");
+            } else {
+                netStatusText.innerText = "অফলাইন";
+                netDot.className = "status-dot offline";
+                btStatusText.innerText = "সক্রিয় (Bluetooth)";
+                btDot.className = "status-dot bluetooth";
+                addLog("> ইন্টারনেট নেই। অফলাইন ব্লুটুথ মোডে সুইচ করা হয়েছে।");
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // প্রাথমিক চেক
+        updateOnlineStatus();
+
+        // স্ক্যান বাটন ইভেন্ট
+        document.getElementById('scan-btn').addEventListener('click', () => {
+            if (!navigator.onLine) {
+                addLog("> ব্লুটুথ স্ক্যানিং শুরু হচ্ছে...");
+                // এখানে বাস্তব ব্লুটুথ API কল হবে
+            } else {
+                addLog("> অনলাইনে নতুন ইউজার খোঁজা হচ্ছে...");
+            }
+        });
+    </script>
+</body>
+</html>
